@@ -33,7 +33,7 @@ De communicatiemodule wordt gebouwd met de volgende technologie stack:
 | Database           | PostgreSQL              |
 | Monitoring         | Prometheus + Grafana    |
 | Containerisatie    | Docker                  |
-| Secrets management | (bijv.) HashiCorp Vault |
+| Secrets management | Environment variables   |
 
 ## Argumentatie per keuze
 
