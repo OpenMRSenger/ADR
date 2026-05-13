@@ -10,7 +10,7 @@ Bij het ontwerp van de communicatiemodule moet een keuze gemaakt worden voor de 
 
 - de complexiteit van deployment en operationalisering;
 - de mogelijkheden voor horizontale en verticale schaling;
-- de kommunikatie tussen componenten (inter-process vs netwerk);
+- de communicatie tussen componenten (inter-process vs netwerk);
 - de onderhoudbaarheid en evolutiebarheid van het systeem;
 - de vereisten aan infrastructuur en DevOps-tooling;
 - de latentie en betrouwbaarheid van communicatie tussen onderdelen.
