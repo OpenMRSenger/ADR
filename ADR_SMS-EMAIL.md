@@ -33,6 +33,8 @@ Wat wordt makkelijker (Voordelen):
 
 - Direct volgens de eisen: We doen precies wat de opdracht vraagt ("bericht op de telefoon") zonder het onnodig ingewikkeld te maken.
 
+- Emails kunnen mogelijk worden gefilterd naar de spambox. Dit zou betekenen dat patienten geen melding krijgen en mogelijk hun afspraak missen
+
 Wat wordt moeilijker (Nadelen):
 
 - Geen reserve-optie: Als een patiënt een fout of geen 06-nummer heeft ingevuld, krijgt deze geen bericht. We hebben geen e-mail als 'plan B'.
