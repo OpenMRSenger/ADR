@@ -1,0 +1,43 @@
+# ADR — Queuesystem: Outbox-pattern met RabbitMQ
+
+## Status: 
+Proposed
+
+
+## Context
+
+De service moet events betrouwbaar naar downstream-systemen publiceren.
+De applicatie gebruikt een relationele database via JPA/Hibernate; events en state moeten consistent blijven bij fouten.
+
+## Decision
+
+Implementeer het transactionele outbox-pattern gecombineerd met RabbitMQ als berichtbroker.
+- Schrijf uitgaande berichten als rijen naar een outbox-tabel binnen dezelfde database-transactie die de domeintoestand bijwerkt.
+- Een achtergrond-relay leest onbezorgde outbox-rijen en publiceert ze naar RabbitMQ; bij succesvolle publicatie wordt de rij gemarkeerd (of teller/metadata bijgewerkt).
+- Gebruik duurzame exchanges/queues en waar mogelijk publisher confirmations/acknowledgements.
+- Topologie: per berichtstroming gebruiken we vijf duurzame queues voor retry/handling — `outbox.primary`, `outbox.retry.10s`, `outbox.retry.60s`, `outbox.retry.600s` en `outbox.dlq`.
+
+Atomiciteit: door het outbox-record in dezelfde DB-transactie te schrijven, is er geen risico dat state wordt bijgewerkt zonder event (of andersom).
+Bedrijfsgemak: RabbitMQ is aanwezig/ondersteund in de codebasis en is operationeel eenvoudiger dan zwaardere streaming-platforms voor onze huidige schaal.
+Betrouwbaarheid en zichtbaarheid: het outbox biedt retry-mogelijkheden, audit-trail en eenvoudige monitoring van pending berichten.
+Decoupling: consumenten blijven via standaard AMQP werken en hoeven geen kennis van de interne DB te hebben.
+
+## Consequences
+Leveringssemantiek: minimaal-eens (at-least-once).
+Latentie: kleine extra lateny door relay-polling/verwerking; acceptabel voor notificaties en integratie-events.
+Operationele overhead: opslag voor outbox, monitoring, retry- en dead-letter-beheer.
+Queue-topologie: de vijf-queue opzet (primary, drie retry-lagen, DLQ) vereenvoudigt retries maar voegt broker-configuratie en extra monitoring/alerting toe.
+
+## Implementation Notes
+
+Outbox-schema (aanbevolen velden): id (UUID), message_type, payload (JSON), destination, created_at, attempts, last_error, published_at, status.
+JPA-entiteit en Spring Data repository voor outbox-rijen.
+Relay-component:
+- Periodiek of event-gestuurd lezen van onbezorgde rijen.
+- Publiceren met publisher confirms (synchronously of met asynchrone bevestiging + tracking).
+- Bij transient fout: backoff/retry; bij exceeden van threshold → verplaatsen naar error queue/table en alerten.
+- Topologie: declareer exchanges/queues/bindings programmatisch bij opstart om consistente broker-configuratie te garanderen.
+- Idempotentie: includeren van een unieke message-id en (optioneel) een business key in de payload zodat consumenten deduplicatie kunnen uitvoeren.
+- Monitoring: metrics voor pending messages, publish-fouten, attempts; alerting bij stijgende foutpercentages of lange backlogs.
+- Opschoonpolicy: periodieke archivering/verwijdering van success- en error-rijen na retentieregels.
+
