@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Superseded (ADR1_1)
 
 ## Context
 

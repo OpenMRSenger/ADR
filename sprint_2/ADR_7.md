@@ -1,7 +1,8 @@
-# ADR — Queuesystem: Outbox-pattern met RabbitMQ
+# ADR-007: Outbox-patroon met RabbitMQ in de rest-service
 
-## Status: 
-Proposed
+## Status
+
+Accepted
 
 
 ## Context

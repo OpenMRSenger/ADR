@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed
+Superseded (ADR_Q)
 
 ## Context
 
